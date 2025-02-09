@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regembly Documentation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+        :root
+        {
+            --color-primary-a0: #80ff80;
+            --color-primary-a1: #92ff8f;
+            --color-primary-a2: #a2ff9d;
+            --color-primary-a3: #b1ffac;
+            --color-primary-a4: #c0ffba;
+            --color-primary-a5: #cdffc8;
+
+            --color-surface-a0: #121212;
+            --color-surface-a1: #282828;
+            --color-surface-a2: #3f3f3f;
+            --color-surface-a3: #575757;
+            --color-surface-a4: #717171;
+            --color-surface-a5: #8b8b8b;
+
+            --color-surface-tonal-a0: #1e261d;
+            --color-surface-tonal-a1: #333a32;
+            --color-surface-tonal-a2: #495048;
+            --color-surface-tonal-a3: #616760;
+            --color-surface-tonal-a4: #797e78;
+            --color-surface-tonal-a5: #929792;
+
+            --shadow-large: #929792;
+
+            font-family: "Montserrat", serif;
+            color: white;
+
+            color-scheme: dark;
+        }
+
+        body
+        {
+            margin: 0;
+            background-color: var(--color-surface-a1);
+        }
+
+        article
+        {
+            padding-top: 40px;
+            padding-bottom: 20px;
+            padding-inline: 8px;
+            margin-bottom: 12px;
+
+            width: min(calc(100% - 64px), 1200px);
+            margin-inline: auto;
+
+            background-color: var(--color-surface-a2);
+            box-shadow: 8px 8px 8px #00000040;
+
+            display: flex;
+            flex-flow: column nowrap;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        h1, h2, h3, h4
+        {
+            text-align: center;
+            font-weight: 500;
+        }
+
+        code
+        {
+            padding-inline: 8px;
+            padding-block: 12px;
+            font-size: large;
+            display: block;
+
+            background-color: var(--color-surface-a1);
+            box-shadow: inset 4px 4px 4px #00000040;
+        }
+
+        input, button
+        {
+            padding: 4px;
+            border: 0;
+            background-color: var(--color-surface-a1);
+            font-family: "Montserrat", serif;
+        }
+        button
+        {
+            margin-inline: 24px;
+
+            &:focus-visible, &:hover
+            {
+                background-color: hsl(from var(--color-surface-a1) h s calc(l + 4));
+            }
+            &:active
+            {
+                filter: brightness(80%);
+            }
+        }
+
+        label
+        {
+            margin-inline: 12px;
+        }
+
+        details
+        {
+            padding-inline: 16px;
+
+            & > summary
+            {
+                font-size: x-large;
+            }
+        }
+
+        .tabbed
+        {
+            margin: 32px 0;
+            padding-bottom: 16px;
+
+            & > input[type="radio"]
+            {
+                /* hiding the inputs */
+                display: none;
+            }
+
+            & > .tabs
+            {
+                display: flex;
+                align-items: stretch;
+                list-style: none;
+                padding: 0;
+
+                label
+                {
+                    margin: 0;
+                    padding-inline: 16px;
+                    padding-block: 16px;
+                    background-color: var(--color-surface-a1);
+                    display: block;
+
+                    &:hover
+                    {
+                        background-color: hsl(from var(--color-surface-a1) h s calc(l + 2));
+                    }
+
+                    &:active
+                    {
+                        background-color: hsl(from var(--color-surface-a1) h s calc(l - 2));
+                    }
+                }
+            }
+
+            & > .tab-content
+            {
+                display: none;
+            }
+
+            & > .tabs > label
+            {
+                display: block;
+            }
+
+            & > input[type="radio"]:nth-of-type(1):checked ~ div.tabs > label:nth-of-type(1),
+            & > input[type="radio"]:nth-of-type(2):checked ~ div.tabs > label:nth-of-type(2),
+            & > input[type="radio"]:nth-of-type(3):checked ~ div.tabs > label:nth-of-type(3),
+            & > input[type="radio"]:nth-of-type(4):checked ~ div.tabs > label:nth-of-type(4),
+            & > input[type="radio"]:nth-of-type(5):checked ~ div.tabs > label:nth-of-type(5)
+            {
+                background-color: hsl(from var(--color-surface-a1) h s calc(l + 4));
+            }
+
+            & > input[type="radio"]:nth-of-type(1):checked ~ div.tab-content:nth-of-type(2),
+            & > input[type="radio"]:nth-of-type(2):checked ~ div.tab-content:nth-of-type(3),
+            & > input[type="radio"]:nth-of-type(3):checked ~ div.tab-content:nth-of-type(4),
+            & > input[type="radio"]:nth-of-type(4):checked ~ div.tab-content:nth-of-type(5),
+            & > input[type="radio"]:nth-of-type(5):checked ~ div.tab-content:nth-of-type(6)
+            {
+                display: block;
+            }
+        }
+
+        code
+        {
+            color: rgb(190, 190, 190);
+
+            &.rbm span.match { color: rgb(241, 212, 131); }
+            &.rbm span.operator { color: rgb(101, 142, 231); }
+
+            &.csh span.class { color: rgb(76, 196, 156); }
+            &.csh span.namespace,
+            &.csh span.feild { color: rgb(235, 235, 235) }
+
+            &.js span.const { color: rgb(150, 174, 219); }
+
+            span.key { color: rgb(101, 142, 231); }
+            span.control { color: rgb(211, 161, 231); }
+            span.variable { color: rgb(182, 234, 243); }
+            span.function { color: rgb(242, 243, 177); }
+            span.tag { color: rgb(235, 235, 235) }
+            span.string { color: rgb(228, 166, 115); }
+            span.number { color: rgb(205, 233, 202); }
+            span.comment { color: rgb(76, 207, 64); }
+        }
+    </style>
+</head>
+<body>
+    <article>
+        <script>
+            function getRegex()
+            {
+                const prettyMode = document.getElementById("pretty-mode").checked;
+                const caseSensitiveMode = document.getElementById("case-sensitive").checked;
+
+                const a = new Array(Number.parseInt(document.getElementById("variable-capacity").value)).fill(0).map((_, i) => i);
+
+                var regex = `
+                    ^(?${caseSensitiveMode ? "i" : ""}${prettyMode ? "x" : ""}ns)(?=(?<p>\\#*))(?>.(?<=(?>(?=(?>(?<-p>\\k<p>)(?>(?(error)(?!))(?(halt)(?!))(?(p)(?!))\\s*(?>
+                    \\/\\*.*?\\*\\/|""(?(x)(?<-x>).*?|(?<match>.*?))""|;|
+                    (?(x)(?<-x>)\\>+|(?<x>\\>)+)|
+                    \\{(?(x)(?<-x>)(?>\\{(?<a>)|(?<-a>)\\}|[^\\}])*\\})|\\}|
+                    \\w+:|
+                    \\*(?(x)(?<-x>)(?>\\w+)|(?>(?<a>\\w+))(?>(?<=(?>(?<p>.*(?<!\\w)\\k<a>\\:)(\\/\\*.*?\\*\\/|"".*?""|.)*?\\*\\k<a>))|(?=(?>(\\/\\*.*?\\*\\/|"".*?""|.)*?(?<!\\w)\\k<a>\\:(?<=(?>(?<p>(\\/\\*.*?\\*\\/|"".*?""|.)*\\k<a>\\:))))))(?<-a>))|
+                    \\&(?(x)(?<-x>)(?>\\w+)|(?>(?<a>\\w+))(?>(?<=(?>(?<p>.*(?<!\\w)\\k<a>\\:)(\\/\\*.*?\\*\\/|"".*?""|.)*?\\&\\k<a>))|(?=(?>(\\/\\*.*?\\*\\/|"".*?""|.)*?(?<!\\w)\\k<a>\\:(?<=(?>(?<p>(\\/\\*.*?\\*\\/|"".*?""|.)*\\k<a>\\:))))))(?<-a>)(?<=(?>(?<r>.*))))|
+                    (?(x)(?<-x>)(?>\\w+)(?>(?>(?>\\++|\\-+|\\=\\w+(\\=+|\\++|\\-+))+|(?=\\?|\\!|\\=|""))(\\!?\\?\\-*)?|"".*?"")|(
+                    ${a.map((i) => `(?(n${i})\\k<n${i}>|(?>(?<n${i}>\\w+)))(?>(?<v${i}>\\+)+|(?(v${i})(?<-v${i}>\\-)|\\-)+|(?=\\?|\\!|\\=|""))(?>\\=(?>${a.filter((ii) => ii != i).map((ii) => `(?(n${ii})\\k<n${ii}>(?>(?=\\*)(?<v${i}>(?<-v${ii}>\\*))*\\**|(?=\\+)(?<v${i}>(?<-v${ii}>\\+))*(?<=(?>(?<v${ii}>\\+)*))\\+*|(?=\\-)(?<-v${i}>(?<-v${ii}>\\-))*(?<=(?>(?<v${ii}>\\-)*))\\-*)|(?!))|`).join("")}(?!\\k<n${i}>)\\w+(\\*+|\\++|\\-+)))*(?>(?<a>\\!)?\\?(?<-v${i}>\\-)*(?(a)(?<-a>)(?(v${i})(?<x>))|(?(v${i})|(?<x>)))(?<=(?>(?<v${i}>\\-)*))\\-*)?(?>""(?>(?<-v${i}>.)*(?<=(?>""(?<v${i}>.)*?))(?<match>.))?.*?"")?`).join("|\n")}))|
+                    \\$\\$(?(x)(?<-x>)|(?<halt>))|
+                    \\$(?(x)(?<-x>)|(?(r)(?<=(?>(?=(?>(?<p>(?<-r>\\k<r>)))).*))|(?<halt>)))|
+                    $(?<halt>)|
+                    (?<error>\\S+)))+)).*)))+
+                `;
+
+                if (prettyMode)
+                    regex = regex.replace(/^\s+|(?<=\n)\s+|\s+$/g, "");
+                else
+                    regex = regex.replace(/\s+/g, "");
+
+                return regex;
+            }
+
+            function generateRegex()
+            {
+                document.getElementById("regex").textContent = getRegex();
+            }
+
+            function copyRegex()
+            {
+                navigator.clipboard.writeText(document.getElementById("regex").textContent);
+                alert("Regex has been copied to your clipboard");
+            }
+        </script>
+        <h1 style="font-weight: 700; font-size: 60px; margin: 0;">Regembly</h1>
+        <h4 style="color: var(--color-surface-a4); margin: 0;">MrJaydanOz</h4>
+        <h3 style="color: var(--color-surface-a5);">Everything is turing-complete if you just believe</h3>
+        <code id="regex" style="white-space: pre-wrap;">
+            ...
+        </code>
+        <div style="display: flex; flex-flow: row wrap-reverse; align-items: stretch;"><div><label for="variable-capacity">Variable Capacity</label><input id="variable-capacity" type="number" value="4" min="1"></div><button style="margin-left: auto; padding-inline: 32px;" onclick="copyRegex()">Copy</button></div>
+        <button onclick="generateRegex()">Generate Regex</button>
+        <a href="https://regex101.com/" style="text-align: center;">Preview regex in Regex101</a>
+        <p style="text-align: center; margin-top: 0;">(For it to work you have set the type to ".NET 7.0", disable the "gm" flags and copy the regex into the text area)</p>
+        <details>
+            <summary>Advanced Options</summary>
+            <div><label for="pretty-mode">Pretty Format</label><input id="pretty-mode" type="checkbox" value="false"></div>
+            <div><label for="case-sensitive">Case sensitive</label><input id="case-sensitive" type="checkbox" value="false"></div>
+        </details>
+    </article>
+    <article>
+        <details>
+            <summary id="how-the-language-works">How the language works</summary>
+            <p>Regembly is a programming language powered only my .NET's implementation of regex (regular expressions). You might ask "Is this turing-complete? Regex is not turing-complete." and
+            it's... not, but turing complete asks that in theory you could run infinitly long programs for infinte time, Regembly can't doesn't do infinte loops. In practice, this language can do a
+            lot that normal programing languages can do.</p>
+            <h2 id="fundamentals">Fundamentals</h2>
+            <p>To start your journey, we will first look at the end. The output of Regembly.</p>
+            <div class="tabbed">
+                <input type="radio" id="1-1-tab1" name="1-1-css-tabs" checked>
+                <input type="radio" id="1-1-tab2" name="1-1-css-tabs">
+                <div class="tabs">
+                    <label for="1-1-tab1">Regembly</label>
+                    <label for="1-1-tab2">C#</label>
+                </div>
+                <div class="tab-content">
+                    <code class="rbm">
+                        <span class="match">"match"</span><br>
+                    </code>
+                </div>
+                <div class="tab-content">
+                    <code class="csh">
+                        <span class="class">Console</span>.<span class="function">Write</span>(<span class="string">"match"</span>);<br>
+                    </code>
+                </div>
+            </div>
+            <p>In Regembly there is only one data type, which leaves the string syntax free to represent the output of the code. This is called a 'match'. Each match is retuned as a capture in a
+            group which can be read from with the below C# code:</p>
+            <code class="csh">
+                <span class="key">using</span> <span class="namespace">System</span>.<span class="namespace">Text</span>.<span class="namespace">RegularExpressions</span>;<br>
+                <br>
+                <span class="comment">// ...</span><br>
+                <br>
+                <span class="class">Regex</span> <span class="variable">regex</span> = <span class="key">new</span> <span class="class">Regex</span>(<span class="string">"&lt;REGEX GOES HERE&gt;"</span>);<br>
+                <br>
+                <span class="class">Match</span> <span class="variable">result</span> = <span class="variable">regex</span>.<span class="function">Match</span>(<span class="string">"&lt;CODE GOES HERE&gt;"</span>);<br>
+                <br>
+                <span class="control">if</span> (<span class="variable">result</span>.<span class="feild">Groups</span>[<span class="string">"error"</span>].<span class="feild">Length</span> &gt; <span class="number">0</span>)<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// Code had and error ...</span><br>
+                <span class="control">else</span> <span class="control">if</span> (<span class="variable">result</span>.<span class="feild">Groups</span>[<span class="string">"halt"</span>].<span class="feild">Length</span> &lt;= <span class="number">0</span>)<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// Code did not finish ...</span><br>
+                <span class="control">else</span><br>
+                {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="control">foreach</span> (<span class="key">var</span> <span class="variable">match</span> <span class="control">in</span> <span class="variable">result</span>.<span class="feild">Groups</span>[<span class="string">"match"</span>].<span class="feild">Captures</span>)<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// ...</span><br>
+                }<br>
+            </code>
+            <p>As mentioned before, Regembly only has one type and that one type is an unsigned integer... kind of. Internally, the value is the size of a stack that is pushed and popped from, which gives the only two math operations:
+            'increment' and 'decrement'.</p>
+            <div class="tabbed">
+                <input type="radio" id="1-2-tab1" name="1-2-css-tabs" checked>
+                <input type="radio" id="1-2-tab2" name="1-2-css-tabs">
+                <input type="radio" id="1-2-tab3" name="1-2-css-tabs">
+                <div class="tabs">
+                    <label for="1-2-tab1">Regembly</label>
+                    <label for="1-2-tab2">C#</label>
+                    <label for="1-2-tab3">C# (Direct)</label>
+                </div>
+                <div class="tab-content">
+                    <code class="rbm">
+                        <span class="variable">a</span><span class="operator">++</span><br>
+                    </code>
+                </div>
+                <div class="tab-content">
+                    <code class="csh">
+                        <span class="key">uint</span> <span class="variable">a</span> = <span class="number">2</span>;<br>
+                    </code>
+                </div>
+                <div class="tab-content">
+                    <code class="csh">
+                        <span class="key">uint</span> <span class="variable">a</span> = <span class="number">0</span>;<br>
+                        <br>
+                        <span class="comment">// ...</span><br>
+                        <br>
+                        <span class="variable">a</span> += <span class="number">2</span>;<br>
+                    </code>
+                </div>
+            </div>
+            <p>Can you guess what the above code does?</p>
+            <p>'a' is a variable that initialises with zero, it then has two added to it (not one). Variables can have any name that satisfies the pattern '\w+' (which means any letter, number or
+            underscore combination). They are limited in the amount you can use for a given regex (A number input is placed above the generate button to change it). Their value can be incremented or
+            decremented with the symbols '+' or '-' respectively. These symbols can be written with anyamount, the amount of these symbols correspond to the amount to change so: 'a+' adds one,
+            'a+++++' adds five and 'a---' subtracts three.</p>
+            <p>Since negative numbers are not supported, all variables are clamped to become zero or more. Because of this, decrementing a variable equal to '0' does nothing.</p>
+            <div class="tabbed">
+                <input type="radio" id="1-3-tab1" name="1-3-css-tabs" checked>
+                <input type="radio" id="1-3-tab2" name="1-3-css-tabs">
+                <input type="radio" id="1-3-tab3" name="1-3-css-tabs">
+                <div class="tabs">
+                    <label for="1-3-tab1">Regembly</label>
+                    <label for="1-3-tab2">C#</label>
+                    <label for="1-3-tab3">C# (Direct)</label>
+                </div>
+                <div class="tab-content">
+                    <code class="rbm">
+                        <span class="variable">a</span><span class="operator">---</span><br>
+                    </code>
+                </div>
+                <div class="tab-content">
+                    <code class="csh">
+                        <span class="key">uint</span> <span class="variable">a</span>;<br>
+                        <br>
+                        <span class="comment">// ...</span><br>
+                        <br>
+                        <span class="control">if</span> (<span class="variable">a</span> &lt;= <span class="number">3</span>)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">a</span> = <span class="number">0</span>;<br>
+                        <span class="control">else</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">a</span> -= <span class="number">3</span>;<br>
+                    </code>
+                </div>
+                <div class="tab-content">
+                    <code class="csh">
+                        <span class="key">uint</span> <span class="variable">a</span>;<br>
+                        <br>
+                        <span class="comment">// ...</span><br>
+                        <br>
+                        <span class="control">for</span> (<span class="key">int</span> <span class="variable">i</span> = <span class="number">0</span>; <span class="variable">i</span> &lt; <span class="number">3</span> && <span class="variable">a</span> &gt; <span class="number">0</span>; <span class="variable">i</span>++)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">a</span>--;<br>
+                    </code>
+                </div>
+            </div>
+            <p>Regembly supports 'goto' functionality for both forward and backwards jumping. Tags, like variables, can be named anything that matches '\w+'.</p>
+            <div class="tabbed">
+                <input type="radio" id="1-4-tab1" name="1-4-css-tabs" checked>
+                <input type="radio" id="1-4-tab2" name="1-4-css-tabs">
+                <div class="tabs">
+                    <label for="1-4-tab1">Regembly</label>
+                    <label for="1-4-tab2">C#</label>
+                </div>
+                <div class="tab-content">
+                    <code class="rbm">
+                        <span class="control">*</span><span class="tag">Tag1</span><br>
+                        <br>
+                        <span class="match">"ignore me"</span><br>
+                        <br>
+                        <span class="tag">Tag1</span>:<br>
+                        <br>
+                        <span class="tag">Tag2</span>:<br>
+                        <br>
+                        <span class="match">"loop me"</span><br>
+                        <br>
+                        <span class="control">*</span><span class="tag">Tag2</span><br>
+                    </code>
+                </div>
+                <div class="tab-content">
+                    <code class="csh">
+                        <span class="control">goto</span> <span class="tag">Tag1</span>;<br>
+                        <br>
+                        <span class="class">Console</span>.<span class="function">Write</span>(<span class="string">"ignore me"</span>);<br>
+                        <br>
+                        <span class="tag">Tag1</span>:<br>
+                        <br>
+                        <span class="tag">Tag2</span>:<br>
+                        <br>
+                        <span class="class">Console</span>.<span class="function">Write</span>(<span class="string">"loop me"</span>);<br>
+                        <br>
+                        <span class="control">goto</span> <span class="tag">Tag2</span>;<br>
+                    </code>
+                </div>
+            </div>
+            <p>Jumping like this is what makes Regembly both so flexible and so limited in what it can compute. While jumping is unrestricted when it is available, it becomes unavailable when there are more jumps than
+            there are characters in the code. <!--(More information in <a href="#how-the-regex-works">'How the regex works' section</a>)--> When a jump is attempted but unavailable, the code will stop without the 'halt' group being matched,
+            signifiying that the code has stopped short. This is the case in the example above.</p>
+            <p>When a 'goto' is searching for a the tag to jump to, it first searches for the closest with the same name before and then the closest after.</p>
+            <code class="rbm">
+                <span class="tag">Tag</span>: <span class="comment">/* 3rd */</span><br>
+                <span class="tag">Tag</span>: <span class="comment">/* 2nd */<br>
+                <span class="tag">Tag</span>: <span class="comment">/* 1st */<br>
+                <br>
+                <span class="control">*</span><span class="tag">Tag</span><br>
+                <br>
+                <span class="tag">Tag</span>: <span class="comment">/* 4th */<br>
+                <span class="tag">Tag</span>: <span class="comment">/* 5th */<br>
+                <span class="tag">Tag</span>: <span class="comment">/* 6th */<br>
+            </code>
+            <p>Regembly has a different way of jumping that is not restriced in that way, it's called skipping and is represented with a greater than symbol '&gt;'. Like with incrementing, skips can be used to any amount and still be a single command.</p>
+            <div class="tabbed">
+                <input type="radio" id="1-5-tab1" name="1-5-css-tabs" checked>
+                <input type="radio" id="1-5-tab2" name="1-5-css-tabs">
+                <div class="tabs">
+                    <label for="1-5-tab1">Regembly</label>
+                    <label for="1-5-tab2">C#</label>
+                </div>
+                <div class="tab-content">
+                    <code class="rbm">
+                        <span class="control">&gt;&gt;</span><br>
+                        <span class="match">"1"</span> <span class="comment">/* skipped */</span><br>
+                        <span class="match">"2"</span> <span class="comment">/* skipped */</span><br>
+                        <span class="match">"3"</span> <span class="comment">/* matched */</span><br>
+                    </code>
+                </div>
+                <div class="tab-content">
+                    <code class="csh">
+                        <span class="key">uint</span> <span class="variable">skip</span> = <span class="number">2</span>;<br>
+                        <br>
+                        <span class="control">if</span> (<span class="variable">skip</span> &gt; <span class="number">0</span>)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">skip</span>--;<br>
+                        <span class="control">else</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="class">Console</span>.<span class="function">Write</span>(<span class="string">"1"</span>); <span class="comment">// skipped</span><br>
+                        <br>
+                        <span class="control">if</span> (<span class="variable">skip</span> &gt; <span class="number">0</span>)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">skip</span>--;<br>
+                        <span class="control">else</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="class">Console</span>.<span class="function">Write</span>(<span class="string">"2"</span>); <span class="comment">// skipped</span><br>
+                        <br>
+                        <span class="control">if</span> (<span class="variable">skip</span> &gt; <span class="number">0</span>)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">skip</span>--;<br>
+                        <span class="control">else</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="class">Console</span>.<span class="function">Write</span>(<span class="string">"3"</span>); <span class="comment">// matched</span><br>
+                    </code>
+                </div>
+            </div>
+            <p>While skipping can be done theroetically infinte times, it is restriced in the sense that it can only jump forwards. Each single skip ('&gt;') jumps over a single command (Not
+            including itself). Commands include the previously mentioned matching ('"..."') and incrementing ('a+').</p>
+            <p>When using skips it's important to be aware of whitespace (any invisible character like the space bar or new lines). Whitespace will always separate commands. See the below example:
+            </p>
+            <code class="rbm">
+                <span class="control">&gt;&gt;&gt;&gt;</span><br>
+            </code>
+            <p>vs</p>
+            <code class="rbm">
+                <span class="control">&gt;&gt; &gt;&gt;</span><br>
+            </code>
+            <p>The first case is one skip command that contains four individual skips and the second is two skip commands, each containing two individual skips. This is different because after the
+            first case, four commands will be jumped over while after the second case, only one will be jumped over. This is because, the first skip command uses one of its containing skips to jump
+            over the second, ignoring it.</p>
+            <h2 id="combinations">Combinations</h2>
+            <p>Continuing from the skip command, you wont have to count how many instructions to skip. Instead, you can use the scope block symbols '{' and '}'.</p>
+            <div class="tabbed">
+                <input type="radio" id="1-6-tab1" name="1-6-css-tabs" checked>
+                <input type="radio" id="1-6-tab2" name="1-6-css-tabs">
+                <div class="tabs">
+                    <label for="1-6-tab1">Regembly</label>
+                    <label for="1-6-tab2">C#</label>
+                </div>
+                <div class="tab-content">
+                    <code class="rbm">
+                        <span class="control">&gt;</span><span class="control">{</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="match">"1"</span> <span class="comment">/* skipped */</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="match">"2"</span> <span class="comment">/* skipped */</span><br>
+                        <span class="control">}</span><br>
+                        <br>
+                        <span class="control">{</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="match">"3"</span> <span class="comment">/* matched */</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="match">"4"</span> <span class="comment">/* matched */</span><br>
+                        <span class="control">}</span><br>
+                    </code>
+                </div>
+                <div class="tab-content">
+                    <code class="csh">
+                        <span class="key">uint</span> <span class="variable">skip</span> = <span class="number">1</span>;<br>
+                        <br>
+                        <span class="control">if</span> (<span class="variable">skip</span> &gt; <span class="number">0</span>)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">skip</span>--;<br>
+                        <span class="control">else</span><br>
+                        {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="class">Console</span>.<span class="function">Write</span>(<span class="string">"1"</span>); <span class="comment">// skipped</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="class">Console</span>.<span class="function">Write</span>(<span class="string">"2"</span>); <span class="comment">// skipped</span><br>
+                        }<br>
+                        <br>
+                        <span class="control">if</span> (<span class="variable">skip</span> &gt; <span class="number">0</span>)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">skip</span>--;<br>
+                        <span class="control">else</span><br>
+                        {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="class">Console</span>.<span class="function">Write</span>(<span class="string">"3"</span>); <span class="comment">// matched</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="class">Console</span>.<span class="function">Write</span>(<span class="string">"4"</span>); <span class="comment">// matched</span><br>
+                        }<br>
+                    </code>
+                </div>
+            </div>
+            <p>While by themselves they do nothing, if they are skipped then the whole contents of the block is skipped as if it were one command. (Recursive blocks are supported)</p>
+            <p>Regembly does also have a return stack, meaning functions are possible. Similar to the 'goto' symbol '*', using '&' and '$' will jump to and return from the tag respectively.</p>
+            <div class="tabbed">
+                <input type="radio" id="1-7-tab1" name="1-7-css-tabs" checked>
+                <input type="radio" id="1-7-tab2" name="1-7-css-tabs">
+                <div class="tabs">
+                    <label for="1-7-tab1">Regembly</label>
+                    <label for="1-7-tab2">C#</label>
+                </div>
+                <div class="tab-content">
+                    <code class="rbm">
+                        <span class="control">&</span><span class="tag">DoAMatch</span><br>
+                        <br>
+                        <span class="control">&gt;</span><span class="control">{</span><span class="tag">DoAMatch</span>:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="match">"match"</span><br>
+                        <span class="control">$</span><span class="control">}</span><br>
+                        <br>
+                        <span class="control">&</span><span class="tag">DoAMatch</span><br>
+                        <span class="control">&</span><span class="tag">DoAMatch</span><br>
+                        <br>
+                        <span class="comment">/* matches: "match", "match", "match" */</span><br>
+                    </code>
+                </div>
+                <div class="tab-content">
+                    <code class="csh">
+                        <span class="function">DoAMatch</span>();<br>
+                        <br>
+                        <span class="key">void</span> <span class="function">DoAMatch</span>();<br>
+                        {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="class">Console</span>.<span class="function">Write</span>(<span class="string">"match"</span>);<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="control">return</span>;<br>
+                        }<br>
+                        <br>
+                        <span class="function">DoAMatch</span>();<br>
+                        <span class="function">DoAMatch</span>();<br>
+                        <br>
+                        <span class="comment">// matches: "match", "match", "match"</span><br>
+                    </code>
+                </div>
+            </div>
+            <p>To finish things off, Regembly has conditions and comparisons. These are related to the '?' symbol and are placed after a variable. If the condition is false, the command is the equivilent to a single skip.</p>
+            <div class="tabbed">
+                <input type="radio" id="1-8-tab1" name="1-8-css-tabs" checked>
+                <input type="radio" id="1-8-tab2" name="1-8-css-tabs">
+                <input type="radio" id="1-8-tab3" name="1-8-css-tabs">
+                <div class="tabs">
+                    <label for="1-8-tab1">Regembly</label>
+                    <label for="1-8-tab2">C#</label>
+                    <label for="1-8-tab3">C# (Direct)</label>
+                </div>
+                <div class="tab-content">
+                    <code class="rbm">
+                        <span class="variable">a</span><span class="control">?</span><span class="match">"'a' is more than zero."</span><br>
+                        <span class="variable">a</span><span class="control">!?</span><span class="match">"'a' is equal to zero."</span><br>
+                    </code>
+                </div>
+                <div class="tab-content">
+                    <code class="csh">
+                        <span class="control">if</span> (<span class="variable">a</span> != <span class="number">0</span>)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="class">Console</span>.<span class="function">Write</span>(<span class="string">"'a' is more than zero."</span>);<br>
+                        <br>
+                        <span class="control">if</span> (<span class="variable">a</span> == <span class="number">0</span>)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="class">Console</span>.<span class="function">Write</span>(<span class="string">"'a' is equal to zero."</span>);<br>
+                    </code>
+                </div>
+                <div class="tab-content">
+                    <code class="csh">
+                        <span class="key">uint</span> <span class="variable">skip</span> = <span class="number">0</span>;<br>
+                        <br>
+                        <span class="control">if</span> (<span class="variable">a</span> == <span class="number">0</span>)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">skip</span>++;<br>
+                        <br>
+                        <span class="control">if</span> (<span class="variable">skip</span> &gt; <span class="number">0</span>)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">skip</span>--;<br>
+                        <span class="control">else</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="class">Console</span>.<span class="function">Write</span>(<span class="string">"'a' is more than zero."</span>);<br>
+                        <br>
+                        <span class="control">if</span> (!(<span class="variable">a</span> == <span class="number">0</span>))<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">skip</span>++;<br>
+                        <br>
+                        <span class="control">if</span> (<span class="variable">skip</span> &gt; <span class="number">0</span>)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">skip</span>--;<br>
+                        <span class="control">else</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="class">Console</span>.<span class="function">Write</span>(<span class="string">"'a' is equal to zero."</span>);<br>
+                    </code>
+                </div>
+            </div>
+            <p>The condition by default only tests whether or not a variable is more than zero, but they can be combined with operations to add more functionality like shown below:</p>
+            <div class="tabbed">
+                <input type="radio" id="1-9-tab1" name="1-9-css-tabs" checked>
+                <input type="radio" id="1-9-tab2" name="1-9-css-tabs">
+                <div class="tabs">
+                    <label for="1-9-tab1">Regembly</label>
+                    <label for="1-9-tab2">C#</label>
+                </div>
+                <div class="tab-content">
+                    <code class="rbm">
+                        <span class="variable">a</span><span class="control">?</span><span class="operator">----</span><span class="match">"A"</span><br>
+                    </code>
+                    <p>Tests whether 'a' is larger than four.</p>
+                    <code class="rbm">
+                        <span class="variable">a</span><span class="operator">----</span><span class="control">?</span><span class="match">"B"</span><br>
+                    </code>
+                    <p>Subtracts four from 'a' and then tests whether its larger than zero.</p>
+                    <code class="rbm">
+                        <span class="variable">a</span><span class="operator">--</span><span class="control">?</span><span class="operator">--</span><span class="match">"C"</span><br>
+                    </code>
+                    <p>Subtracts two from 'a' and then tests whether its larger than two.</p>
+                </div>
+                <div class="tab-content">
+                    <code class="csh">
+                        <span class="control">if</span> (<span class="variable">a</span> &gt; <span class="number">4</span>)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="class">Console</span>.<span class="function">Write</span>(<span class="string">"A"</span>);<br>
+                    </code>
+                    <p>Tests whether 'a' is larger than four.</p>
+                    <code class="csh">
+                        <span class="variable">a</span> -= <span class="number">4</span>;<br>
+                        <span class="control">if</span> (<span class="variable">a</span> &gt; <span class="number">0</span>)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="class">Console</span>.<span class="function">Write</span>(<span class="string">"B"</span>);<br>
+                    </code>
+                    <p>Subtracts four from 'a' and then tests whether its larger than zero.</p>
+                    <code class="csh">
+                        <span class="variable">a</span> -= <span class="number">2</span>;<br>
+                        <span class="control">if</span> (<span class="variable">a</span> &gt; <span class="number">2</span>)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="class">Console</span>.<span class="function">Write</span>(<span class="string">"C"</span>);<br>
+                    </code>
+                    <p>Subtracts two from 'a' and then tests whether its larger than two.</p>
+                </div>
+            </div>
+            <p>Operations can also read from other variables, three types are supported:</p>
+            <div class="tabbed">
+                <input type="radio" id="1-10-tab1" name="1-10-css-tabs" checked>
+                <input type="radio" id="1-10-tab2" name="1-10-css-tabs">
+                <input type="radio" id="1-10-tab3" name="1-10-css-tabs">
+                <div class="tabs">
+                    <label for="1-10-tab1">Regembly</label>
+                    <label for="1-10-tab2">C#</label>
+                    <label for="1-10-tab3">C# (Direct)</label>
+                </div>
+                <div class="tab-content">
+                    <code class="rbm">
+                        <span class="variable">a</span><span class="operator">=</span><span class="variable">b</span><span class="operator">++++</span><br>
+                    </code>
+                    <p>Adds the minimum of the value of 'b' and the amount of '+'s to 'a'.</p>
+                    <code class="rbm">
+                        <span class="variable">a</span><span class="operator">=</span><span class="variable">b</span><span class="operator">----</span><br>
+                    </code>
+                    <p>Subtracts the minimum of the value of 'b' and the amount of '-'s from 'a'.</p>
+                    <code class="rbm">
+                        <span class="variable">a</span><span class="operator">=</span><span class="variable">b</span><span class="operator">****</span><br>
+                    </code>
+                    <p>Adds the minimum of the value of 'b' and the amount of '*'s to 'a' and subtracts the same amount from 'b'. Effectively moving the value.</p>
+                </div>
+                <div class="tab-content">
+                    <code class="csh">
+                        <span class="variable">a</span> += <span class="class">Math</span>.<span class="function">Min</span>(<span class="variable">b</span>, <span class="number">4</span>);<br>
+                    </code>
+                    <p>Adds the minimum of the value of 'b' and the amount of '+'s to 'a'.</p>
+                    <code class="csh">
+                        <span class="variable">a</span> -= <span class="class">Math</span>.<span class="function">Min</span>(<span class="class">Math</span>.<span class="function">Min</span>(<span class="variable">a</span>, <span class="variable">b</span>), <span class="number">4</span>);<br>
+                    </code>
+                    <p>Subtracts the minimum of the value of 'b' and the amount of '-'s from 'a'.</p>
+                    <code class="csh">
+                        <span class="key">uint</span> <span class="variable">transfer</span> = <span class="class">Math</span>.<span class="function">Min</span>(<span class="variable">b</span>, <span class="number">4</span>);<br>
+                        <span class="variable">a</span> += <span class="variable">transfer</span>;<br>
+                        <span class="variable">b</span> -= <span class="variable">transfer</span>;<br>
+                    </code>
+                    <p>Adds the minimum of the value of 'b' and the amount of '*'s to 'a' and subtracts the same amount from 'b'. Effectively moving the value.</p>
+                </div>
+                <div class="tab-content">
+                    <code class="csh">
+                        <span class="control">for</span> (<span class="key">int</span> <span class="variable">i</span> = <span class="class">Math</span>.<span class="function">Min</span>(<span class="variable">b</span>, <span class="number">4</span>); <span class="variable">i</span> &gt;= <span class="number">0</span>; <span class="variable">i</span>--)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">a</span>++;<br>
+                    </code>
+                    <p>Adds the minimum of the value of 'b' and the amount of '+'s to 'a'.</p>
+                    <code class="csh">
+                        <span class="control">for</span> (<span class="key">int</span> <span class="variable">i</span> = <span class="class">Math</span>.<span class="function">Min</span>(<span class="variable">b</span>, <span class="number">4</span>); <span class="variable">i</span> &gt;= <span class="number">0</span> && <span class="variable">a</span> &gt; <span class="number">0</span>; <span class="variable">i</span>--)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">a</span>--;<br>
+                    </code>
+                    <p>Subtracts the minimum of the value of 'b' and the amount of '-'s from 'a'.</p>
+                    <code class="csh">
+                        <span class="control">for</span> (<span class="key">int</span> <span class="variable">i</span> = <span class="class">Math</span>.<span class="function">Min</span>(<span class="variable">b</span>, <span class="number">4</span>); <span class="variable">i</span> &gt;= <span class="number">0</span>; <span class="variable">i</span>--)<br>
+                        {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">a</span>++;<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">b</span>--;<br>
+                        }<br>
+                    </code>
+                    <p>Adds the minimum of the value of 'b' and the amount of '*'s to 'a' and subtracts the same amount from 'b'. Effectively moving the value.</p>
+                </div>
+            </div>
+            <p>A little extra I added is to be able to index a match with a variable if you don't but a '?' between them.</p>
+            <code class="rbm">
+                <span class="variable">a</span><span class="match">"0123456789"</span><br>
+                <span class="comment">/* Matches the value of 'a' if it's between 0 and 10. */</span>
+            </code>
+            <p>Finally, all of this last part can be combined together to create cursed garbage.</p>
+            <code class="rbm">
+                <span class="variable">a</span><span class="operator">+++</span><span class="operator">=</span><span class="variable">b</span><span class="operator">**</span><span class="operator">=</span><span class="variable">c</span><span class="operator">+++++</span><span class="match">"ABCDE"</span><br>
+            </code>
+            <p>I am MrJaydanOz, this is Regembly and regex is the compiler. Happy coding!</p>
+            <a href="https://regex101.com/">Preview regex in Regex101</a>
+            <p style="margin-top: 0;">(For it to work you have set the type to ".NET 7.0", disable the "gm" flags and copy the regex into the text area)</p>
+        </details>
+    </article>
+    <!--<article>
+        <details id="how-the-regex-works">
+            <summary>How the regex works</summary>
+            
+        </details>
+    </article>-->
+</body>
+</html>
